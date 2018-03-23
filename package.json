@@ -4,7 +4,6 @@
   "description": "front-end cross origin demo",
   "main": "index.js",
   "scripts": {
-    "test": "jasmine"
   },
   "keywords": [
     "cors"
