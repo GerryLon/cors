@@ -19,13 +19,13 @@
   <script type="text/javascript">
     var baseUrl = 'http://localhost:8900/api'
 
-    // jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000;
-
+    // 普通调用
+    // Failed to load http://localhost:8900/api/get1: No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://localhost:8080' is therefore not allowed access.
     describe("跨域测试前端用例", function() {
 
       it("/get1 应该返回'get1 success'", function(done) {
         var result;
-        
+
         $.ajax({
           url: baseUrl + '/get1'
         }).then(res => {
@@ -38,6 +38,8 @@
         }, 1000);
       });
 
+      // 服务端加上了这句， 可以能过
+      // response.setHeader('Access-Control-Allow-Origin', '*');
       it("/get2 应该返回'get2 success'", function(done) {
         var result;
 
@@ -49,6 +51,27 @@
 
         setTimeout(function() {
           expect(result).toEqual('get2 success');
+          done();
+        }, 1000);
+      });
+
+      // 仅前台修改， 以jsonp方式请求
+      it("/get3 应该返回'get3 success'", function(done) {
+        var result;
+
+        $.ajax({
+          url: baseUrl + '/get3',
+          dataType: 'jsonp'
+        }).then(function(res) {
+          result = res;
+
+          // alert(result);
+        }).fail(function(err) {
+          console.log(err);
+        });
+
+        setTimeout(function() {
+          expect(result).toEqual('get3 success');
           done();
         }, 1000);
       });
