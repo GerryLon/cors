@@ -1,0 +1,17 @@
+{
+  "name": "cors",
+  "version": "1.0.0",
+  "description": "front-end cross origin demo",
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine"
+  },
+  "keywords": [
+    "cors"
+  ],
+  "author": "gerrylon",
+  "license": "ISC",
+  "dependencies": {
+    "yargs": "^11.0.0"
+  }
+}
