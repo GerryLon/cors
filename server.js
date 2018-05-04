@@ -55,6 +55,20 @@ http.createServer(function(req, res) {
         res.end('get4 success');
         break;
 
+      // 带cookie
+      case '/get5':
+
+        // 需要的才加
+        // 这里用正则判断是test.com或者xx.test.com的形式都允许跨域访问
+        if (origin && /^https?:\/\/(?:\w+\.)?test\.com.*$/.test(origin)) {
+          res.setHeader('Access-Control-Allow-Origin', origin);
+          res.setHeader('Access-Control-Allow-Credentials', 'true');
+        }
+        // let cookies = req.headers['cookie'];
+        // console.log(cookies);
+        res.end('get5 success');
+      break;
+
       // 代理接口
       case '/proxy':
         let query = urlObj.query,

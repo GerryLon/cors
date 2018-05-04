@@ -7,6 +7,7 @@
 
 ## 什么是跨域?
 先来讲讲什么是跨域？
+
 * XMLHttpRequest同源策略：禁止使用XHR对象向不同源的服务器地址发起HTTP请求。
 * DOM同源策略：禁止对不同源页面DOM进行操作。这里主要场景是iframe跨域的情况，不同域名的iframe是限制互相访问的。
 
@@ -57,7 +58,8 @@ cors仓库下的img目录有一些测试时的截图
 var baseUrl = 'http://b.test.com:8900/api'; // 接口所在服务器
 ```
 
- - 用例1: A直接调B的接口
+- 用例1: A直接调B的接口
+
   ```js
   // Client
   $.ajax({
@@ -67,12 +69,15 @@ var baseUrl = 'http://b.test.com:8900/api'; // 接口所在服务器
   // Server
   response.end('get1 success');
   ```
+  控制台报错:
+
   > Failed to load http://b.test.com:8900/api/get1: No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://a.test.com:8080' is therefore not allowed access.
 
   这是最常见的情况, 相信做web开发的都遇到过.
   既然说`Access-Control-Allow-Origin`没有, 那我们加上如何?
 
-  - 用例2: 同用例1, 不过服务端代码有改:
+- 用例2: 同用例1, 不过服务端代码有改:
+
   ```js
   // Client
   $.ajax({
@@ -86,11 +91,13 @@ var baseUrl = 'http://b.test.com:8900/api'; // 接口所在服务器
   加上这个头就好了, 截图如下:
   ![img](http://7xl7ab.com1.z0.glb.clouddn.com/cors/2.png)
   
-  不过有时被调用方不是由我们控制的, 比如我们调用别人家的接口, 这种改服务端的方法就不行了, 那么我们就改客户端代码, 也就是常说的JSONP, 见下面的用例3.
+  不过有时被调用方不是由我们控制的, 比如我们调用别人家的接口, 这种改服务端的方法就不行了, 那么我们就改客户端代码, 也就是常说的JSONP, 见下面的
 
-  - 用例3: JSONP方式跨域
+- 用例3: JSONP方式跨域
+
   JSONP的原理就是利用`<script>`不受跨域限制的特点, 动态加载一个js文件.
   其本质是一个普通的GET请求, 所以它只能处理GET的情况, POST不行.
+
   ```js
   // Client
   $.ajax({
@@ -112,7 +119,8 @@ var baseUrl = 'http://b.test.com:8900/api'; // 接口所在服务器
   如[豆瓣的Api](https://developers.douban.com/wiki/?title=api_v2)
   ![](http://7xl7ab.com1.z0.glb.clouddn.com/cors/4.png)
 
-  - 用例4: 使用代理接口解决跨域问题
+- 用例4: 使用代理接口解决跨域问题
+
   例子2和3都能解决问题, 但是都不太完美.
   例2直接设置`Access-Control-Allow-Origin`为`*`, 这样其实不太好.
   一般我们只想给自己域名下的api调用添加这个头: 比如常见的: a.test.com, b.test.com.
@@ -151,7 +159,7 @@ var baseUrl = 'http://b.test.com:8900/api'; // 接口所在服务器
   这因为是在浏览器中的ajax进行的, 所以会有这个问题, 如果直接在浏览器地址栏输入或者curl什么的, 就不会有这个问题, 那么我们就自己在服务端写一个代理的接口, 然后请求自己的接口, 转发请求, 回送响应. 这个方法是万能的, 不过就是多了一层, 麻烦一些. 而且还要区分GET, POST等处理.
 
   实际效果:
-  ![4]("http://7xl7ab.com1.z0.glb.clouddn.com/cors/douban.gif")
+  ![4](http://7xl7ab.com1.z0.glb.clouddn.com/cors/douban.gif)
 
   ```js
   // Client
@@ -192,6 +200,39 @@ var baseUrl = 'http://b.test.com:8900/api'; // 接口所在服务器
   其中使用了[request](https://www.npmjs.com/package/request)库, 具体不展开说明, 感觉相当强大方便.
   这种解决方案可以说是完美了, 原理也很简单明了.
   沿用此思路, 利用nginx也是可以了, 不过没有代码方便一些.
+
+- 用例5: 带凭据的请求
+  以最常见的携带cookie为例.
+  这种首先要添加`Access-Control-Allow-Origin`响应头, 并且值不能为`*`;
+  如果为`*`, 会报错:
+
+  ![](./img/cookie_origin.png)
+
+  假如在B下存在一条cookie: name=gl, 那么在A下ajax请求B时, 默认是不会带上这条cookie的.
+  如果请求时携带凭据, 服务端不作设置:
+  ```js
+  // Client
+  $.ajax({
+    url: baseUrl + '/get5',
+    xhrFields: {
+      withCredentials: true
+    }
+  });
+  ```
+  此时就会报错:
+
+  > Failed to load http://b.test.com:8900/api/get5: The value of the 'Access-Control-Allow-Credentials' header in the response is '' which must be 'true' when the request's credentials mode is 'include'. Origin 'http://a.test.com:8080' is therefore not allowed access. The credentials mode of requests initiated by the XMLHttpRequest is controlled by the withCredentials attribute.
+
+  意思是, 客户端携带上了凭据, 那么服务端要设置`Access-Control-Allow-Credentials`为`true`
+  才行.
+
+  在服务端设置相应头:
+  ```js
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  ```
+  此时请求成功, 发现cookie也带上了:
+  ![](./img/cookie2.png)
+  
 
 ## 结论
   ajax跨域问题一般通过JSONP或者服务端添加CORS头就能解决绝大多数的情况, 第三方接口跨域调用可以采用代理接口的方法.

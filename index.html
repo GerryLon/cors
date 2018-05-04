@@ -94,8 +94,28 @@
           done();
         }, 1000);
       });
+
+      // 带cookie
+      it("/get5 应该返回'get5 success'", function(done) {
+        var result;
+
+        $.ajax({
+          url: baseUrl + '/get5',
+          xhrFields: {
+            withCredentials: true
+          }
+        }).then(res => {
+          result = res;
+        });
+
+        setTimeout(function() {
+          expect(result).toEqual('get5 success');
+          done();
+        }, 1000);
+      });
+
       // 代理接口演示
-      it("/get5 应该返回书籍信息列表", function(done) {
+      it("/proxy 应该返回书籍信息列表", function(done) {
         var result;
 
         $.ajax({
