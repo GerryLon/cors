@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "front-end cross origin demo",
   "main": "index.js",
-  "scripts": {
-  },
+  "scripts": {},
   "keywords": [
     "cors"
   ],
   "author": "gerrylon",
   "license": "ISC",
   "dependencies": {
+    "request": "^2.85.0",
     "yargs": "^11.0.0"
   }
 }

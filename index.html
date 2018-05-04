@@ -16,8 +16,11 @@
 </head>
 
 <body>
+  <div>
+
+  </div>
   <script type="text/javascript">
-    var baseUrl = 'http://localhost:8900/api'
+    var baseUrl = 'http://b.test.com:8900/api'
 
     // 普通调用
     // Failed to load http://localhost:8900/api/get1: No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://localhost:8080' is therefore not allowed access.
@@ -75,8 +78,52 @@
           done();
         }, 1000);
       });
-    });
 
+      // 动态添加Access-Control-Allow-Origin头
+      it("/get4 应该返回'get4 success'", function(done) {
+        var result;
+
+        $.ajax({
+          url: baseUrl + '/get4'
+        }).then(res => {
+          result = res;
+        });
+
+        setTimeout(function() {
+          expect(result).toEqual('get4 success');
+          done();
+        }, 1000);
+      });
+      // 代理接口演示
+      it("/get5 应该返回书籍信息列表", function(done) {
+        var result;
+
+        $.ajax({
+          type: 'get',
+          url: baseUrl + '/proxy',
+          dataType: 'json',
+          data: {
+            q: '伟大的数学公式',
+            start: 0,
+            count: 1,
+            // https://developers.douban.com/wiki/?title=book_v2#get_book_search
+            __target: 'https://api.douban.com/v2/book/search'
+          }
+        }).then(res => {
+          result = res;
+        }, function() {
+          console.log(arguments);
+          alert(arguments);
+        });
+
+        setTimeout(function() {
+          expect(result.books.length).toEqual(1);
+          done();
+        }, 2000);
+
+
+      });
+    });
   </script>
 </body>
 
