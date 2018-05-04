@@ -202,13 +202,15 @@ var baseUrl = 'http://b.test.com:8900/api'; // 接口所在服务器
   沿用此思路, 利用nginx也是可以了, 不过没有代码方便一些.
 
 - 用例5: 带凭据的请求
+
   以最常见的携带cookie为例.
-  这种首先要添加`Access-Control-Allow-Origin`响应头, 并且值不能为`*`;
+  这种首先要添加`Access-Control-Allow-Origin`响应头, 并且值不能为`*`;   
   如果为`*`, 会报错:
 
-  ![](./img/cookie_origin.png)
+  ![](http://7xl7ab.com1.z0.glb.clouddn.com/cors/cookie_origin.png)
 
-  假如在B下存在一条cookie: name=gl, 那么在A下ajax请求B时, 默认是不会带上这条cookie的.
+  假如在B下存在一条cookie: name=gl, 那么在A下ajax请求B时,    
+  默认是不会带上这条cookie的.
   如果请求时携带凭据, 服务端不作设置:
   ```js
   // Client
@@ -231,8 +233,8 @@ var baseUrl = 'http://b.test.com:8900/api'; // 接口所在服务器
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   ```
   此时请求成功, 发现cookie也带上了:
-  ![](./img/cookie2.png)
-  
+  ![](http://7xl7ab.com1.z0.glb.clouddn.com/cors/cookie2.png)
+
 
 ## 结论
   ajax跨域问题一般通过JSONP或者服务端添加CORS头就能解决绝大多数的情况, 第三方接口跨域调用可以采用代理接口的方法.
